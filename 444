@@ -1,0 +1,67 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <iomanip>
+#include <time.h>
+#include <cmath>
+#include <omp.h>
+using namespace std;
+
+long int** createArray(int  size, long int z){
+	long int** a;
+	a = new long int*[size];
+	for (int i = 0; i< size; i++)
+		a[i] = new long int[size];
+	#pragma omp for collapse (2)
+	for (int i = 0; i< size; i++)
+	for (int j = 0; j< size; j++)
+		a[i][j] = z;
+	return a;
+}
+
+const void printArray(long int** a, int size){
+	#pragma omp for collapse (2)
+	for (int i = 0; i< size; i++){
+		for (int j = 0; j< size; j++)
+			cout << a[i][j] << " ";
+		cout << endl;
+	}
+}
+void deletArray(long int **array, int row_count){
+	for (int r = 0; r< row_count; r++)
+		delete[] array[r];
+	delete[] array;
+}
+
+long int** mulMatrix(long int** a, long int** b, int size){
+	long int** c;
+	c = createArray(size, 0);
+	long int sum = 0;
+#pragma omp parallel for shared(с,size) private(i, j, k)
+	for (int i = 0; i < size; i++){
+		for (int j = 0; j<size; j++){
+			#pragma	reduction(+: sum)	
+			for (int k = 0; k<size; k++)
+				sum = sum + a[i][k] * b[k][j];
+			c[i][j] = sum;
+		}
+	}
+	return c;
+}
+void perform(int size){
+	long int** c;
+	long int** a = createArray(size, 4);
+	long int** b = createArray(size, 5);
+	c = mulMatrix(a, b, size);
+	printArray(c, size);
+	deletArray(a, size);
+	deletArray(b, size);
+	deletArray(c, size);
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	perform(100);
+	cin.get();
+	return 0;
+}
