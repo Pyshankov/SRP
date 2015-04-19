@@ -1,0 +1,60 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+long int** createArray(int  size,long int z){
+	long int** a;
+	a = new long int*[size];
+	for (int i = 0 ; i< size ; i++)
+		a[i]=new long int[size];
+
+	for (int i = 0 ; i< size ; i++)
+	for (int j = 0 ; j< size ; j++)
+		a[i][j]=z;
+	return a;
+}
+
+const void printArray(long int** a,int size){
+	for (int i = 0 ; i< size ; i++){
+		for (int j = 0 ; j< size ; j++)
+			cout<<a[i][j]<< " ";
+			cout<<endl;
+	}
+}
+void deletArray(long int **array, int row_count){
+    for(int r=0; r< row_count; r++)
+       delete[] array[r];
+       delete [] array;
+  }
+
+long int** mulMatrix(long int** a,long int** b,int size){
+	long int** c;
+	c=createArray(size,0);
+	long int sum=0;
+	for (int i = 0 ; i < size ; i++){
+		for (int j = 0 ;j<size ; j++){
+			sum=0;
+		for (int k = 0 ;k<size ; k++)
+			sum=sum+a[i][k]*b[k][j];
+		c[i][j]=sum;
+		}
+	}
+	return c;
+}
+void perform(){
+	long int** c;
+	long int** a=createArray(5,4);
+	long int** b=createArray(5,5);
+	c = mulMatrix(a,b,5);
+	printArray(c,5);
+	deletArray(a,5);
+	deletArray(b,5);
+	deletArray(c,5);
+}
+int main() {
+
+	perform();
+
+	return 0;
+}
